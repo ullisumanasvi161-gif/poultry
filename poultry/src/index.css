@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-emerald-50: var(--color-pink-50);
+  --color-emerald-100: var(--color-pink-100);
+  --color-emerald-200: var(--color-pink-200);
+  --color-emerald-300: var(--color-pink-300);
+  --color-emerald-400: var(--color-pink-400);
+  --color-emerald-500: var(--color-pink-500);
+  --color-emerald-600: var(--color-pink-600);
+  --color-emerald-700: var(--color-pink-700);
+  --color-emerald-800: var(--color-pink-800);
+  --color-emerald-900: var(--color-pink-900);
+  --color-emerald-950: var(--color-pink-950);
+
+  --color-green-50: var(--color-pink-50);
+  --color-green-100: var(--color-pink-100);
+  --color-green-200: var(--color-pink-200);
+  --color-green-300: var(--color-pink-300);
+  --color-green-400: var(--color-pink-400);
+  --color-green-500: var(--color-pink-500);
+  --color-green-600: var(--color-pink-600);
+  --color-green-700: var(--color-pink-700);
+  --color-green-800: var(--color-pink-800);
+  --color-green-900: var(--color-pink-900);
+  --color-green-950: var(--color-pink-950);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html, body {
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  body {
+    @apply bg-slate-50 text-slate-900 transition-colors duration-200 ease-in-out min-h-screen;
+  }
+  
+  body.dark {
+    @apply bg-slate-950 text-slate-100;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 dark:bg-slate-800 rounded-full hover:bg-slate-300 dark:hover:bg-slate-700;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Print Utilities */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  /* Force clean printing grid and tables */
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+}
+
+/* Custom printing frame selectors */
+#print-frame-container {
+  display: none;
+}
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  #print-frame-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* When printing a prepared invoice, hide main app root */
+  #print-frame-container:not(:empty) ~ #root {
+    display: none !important;
+  }
+
+  /* Hide print frame if empty */
+  #print-frame-container:empty {
+    display: none !important;
+  }
+}
