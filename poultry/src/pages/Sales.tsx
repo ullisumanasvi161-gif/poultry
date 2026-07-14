@@ -156,88 +156,108 @@ export const SalesBilling: React.FC = () => {
     } else {
       // Print as formal A4 Invoice
       printContainer.innerHTML = `
-        <div style="font-family: Arial, sans-serif; padding: 40px; color: #000; line-height: 1.5;">
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <div style="font-family: Arial, sans-serif; padding: 30px; color: #1e293b; max-width: 800px; margin: 0 auto;">
+          <!-- Header -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
             <tr>
-              <td>
-                <h1 style="color: #059669; margin: 0; text-transform: uppercase;">TAX INVOICE</h1>
-                <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">Invoice No: <strong>${s.invoiceNumber}</strong><br>Date: ${formatDate(s.date)}</p>
-              </td>
-              <td style="text-align: right;">
-                <h2 style="margin: 0; color: #1e293b;">${settings.companyName}</h2>
-                <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+              <td style="vertical-align: top;">
+                <h3 style="color: #db2777; margin: 0; font-size: 24px; font-weight: bold; text-transform: uppercase;">${settings.companyName}</h3>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #64748b; line-height: 1.5;">
                   ${settings.address}<br>
-                  Phone: ${settings.phone} • Email: ${settings.email}<br>
-                  <strong>GSTIN: ${settings.gstNumber}</strong>
+                  GST: ${settings.gstNumber}
+                </p>
+              </td>
+              <td style="text-align: right; vertical-align: top;">
+                <h4 style="margin: 0; font-size: 18px; font-weight: 800; color: #1e293b;">TAX INVOICE</h4>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #64748b; line-height: 1.5;">
+                  INV: <strong style="color: #334155;">${s.invoiceNumber}</strong><br>
+                  Date: ${formatDate(s.date)}
                 </p>
               </td>
             </tr>
           </table>
 
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 12px;">
-            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-              <td style="padding: 10px; width: 50%;"><strong>BILLED TO:</strong></td>
-              <td style="padding: 10px; width: 50%;"><strong>TRANSPORT / POLICY:</strong></td>
-            </tr>
+          <!-- Billed To & Transport Policy -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
             <tr>
-              <td style="padding: 10px; vertical-align: top;">
-                <strong>${customer?.shopName || 'Retail Customer'}</strong><br>
-                Proprietor: ${customer?.name || 'Walk-in'}<br>
-                Phone: ${customer?.phone || 'N/A'}<br>
-                GSTIN: ${customer?.gstNumber || 'N/A'}<br>
-                Address: ${customer?.address || 'N/A'}
+              <td style="vertical-align: top; width: 50%;">
+                <p style="margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Billed To:</p>
+                <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: bold; color: #1e293b;">
+                  ${customer?.shopName || 'WALK-IN CLIENT'}
+                </p>
+                <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.4;">
+                  Proprietor: ${customer?.name || 'Walk-in'}<br>
+                  Address: ${customer?.address || 'N/A'}
+                </p>
               </td>
-              <td style="padding: 10px; vertical-align: top;">
-                Payment Type: ${s.paymentType}<br>
-                Delivery Charge: ${formatCurrency(s.deliveryCharge)}<br>
-                Packing Charge: ${formatCurrency(s.packingCharge)}
+              <td style="text-align: right; vertical-align: top; width: 50%;">
+                <p style="margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Transport Policy:</p>
+                <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.5;">
+                  Mode: ${s.paymentType}<br>
+                  Packing Charge: ${formatCurrency(s.packingCharge)}<br>
+                  Delivery Charge: ${formatCurrency(s.deliveryCharge)}
+                </p>
               </td>
             </tr>
           </table>
 
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; text-align: left;">
+          <!-- Items Table -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; text-align: left;">
             <thead>
-              <tr style="background: #059669; color: #fff;">
-                <th style="padding: 12px 10px;">Item Description</th>
-                <th style="padding: 12px 10px; text-align: right;">Weight (Qty)</th>
-                <th style="padding: 12px 10px; text-align: right;">Rate / KG</th>
-                <th style="padding: 12px 10px; text-align: right;">Taxable Amount</th>
+              <tr style="background: #db2777; color: #fff;">
+                <th style="padding: 12px; font-weight: bold;">Item Description</th>
+                <th style="padding: 12px; font-weight: bold; text-align: right;">Weight</th>
+                <th style="padding: 12px; font-weight: bold; text-align: right;">Rate</th>
+                <th style="padding: 12px; font-weight: bold; text-align: right;">Taxable</th>
               </tr>
             </thead>
             <tbody>
               <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 12px 10px;">${s.chickenType}</td>
-                <td style="padding: 12px 10px; text-align: right;">${formatWeight(s.weight)}</td>
-                <td style="padding: 12px 10px; text-align: right;">${formatCurrency(s.sellingRate)}</td>
-                <td style="padding: 12px 10px; text-align: right;">${formatCurrency(s.weight * s.sellingRate)}</td>
+                <td style="padding: 12px; font-weight: 500;">${s.chickenType}</td>
+                <td style="padding: 12px; text-align: right;">${formatWeight(s.weight)}</td>
+                <td style="padding: 12px; text-align: right;">${formatCurrency(s.sellingRate)}</td>
+                <td style="padding: 12px; text-align: right;">${formatCurrency(s.weight * s.sellingRate)}</td>
               </tr>
             </tbody>
           </table>
 
-          <table style="width: 100%; font-size: 12px; margin-top: 20px;">
+          <!-- Footer Section (Terms & Totals) -->
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
             <tr>
-              <td style="width: 55%; vertical-align: top;"></td>
+              <td style="width: 55%; vertical-align: top; padding-right: 20px;">
+                <div style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; color: #475569; font-size: 12px; line-height: 1.5; white-space: pre-line;">
+                  <strong style="color: #1e293b;">Terms & Conditions:</strong><br>
+                  ${settings.termsAndConditions}
+                </div>
+              </td>
               <td style="width: 45%; vertical-align: top;">
-                <table style="width: 100%; border-collapse: collapse;">
-                  <tr><td style="padding: 6px 0;">Subtotal:</td><td style="text-align: right; padding: 6px 0;">${formatCurrency(s.weight * s.sellingRate)}</td></tr>
-                  <tr><td style="padding: 6px 0;">Discount:</td><td style="text-align: right; padding: 6px 0; color: #ef4444;">-${formatCurrency(s.discount)}</td></tr>
-                  <tr><td style="padding: 6px 0; border-top: 1px solid #e2e8f0;">Taxable Value:</td><td style="text-align: right; padding: 6px 0; border-top: 1px solid #e2e8f0;">${formatCurrency(taxable)}</td></tr>
-                  <tr><td style="padding: 6px 0;">GST (${s.gst}%):</td><td style="text-align: right; padding: 6px 0;">${formatCurrency(taxAmt)}</td></tr>
-                  <tr><td style="padding: 6px 0;">Packing + Delivery:</td><td style="text-align: right; padding: 6px 0;">${formatCurrency(s.packingCharge + s.deliveryCharge)}</td></tr>
-                  <tr style="font-weight: bold; border-top: 2px solid #e2e8f0; font-size: 14px; color: #059669;">
-                    <td style="padding: 10px 0;">Invoice Total:</td>
-                    <td style="text-align: right; padding: 10px 0;">${formatCurrency(s.totalAmount)}</td>
+                <table style="width: 100%; border-collapse: collapse; font-weight: 500;">
+                  <tr>
+                    <td style="padding: 6px 0;">Subtotal:</td>
+                    <td style="text-align: right; padding: 6px 0;">${formatCurrency(s.weight * s.sellingRate)}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0; color: #f43f5e;">Discount:</td>
+                    <td style="text-align: right; padding: 6px 0; color: #f43f5e;">-${formatCurrency(s.discount)}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0;">GST (${s.gst}%):</td>
+                    <td style="text-align: right; padding: 6px 0;">${formatCurrency(taxAmt)}</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #e2e8f0; font-weight: bold; font-size: 16px; color: #db2777;">
+                    <td style="padding: 12px 0 0 0;">Total Due:</td>
+                    <td style="text-align: right; padding: 12px 0 0 0;">${formatCurrency(s.totalAmount)}</td>
                   </tr>
                 </table>
               </td>
             </tr>
           </table>
-
-          <div style="margin-top: 80px; font-size: 11px;">
+          
+          <div style="margin-top: 60px; font-size: 13px; color: #64748b;">
             <table style="width: 100%;">
               <tr>
                 <td>Customer Signature: _____________________</td>
-                <td style="text-align: right;">For <strong>${settings.companyName}</strong><br><br><br>Authorized Signatory</td>
+                <td style="text-align: right;">Authorized Signatory</td>
               </tr>
             </table>
           </div>
