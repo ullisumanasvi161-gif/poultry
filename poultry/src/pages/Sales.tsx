@@ -27,7 +27,7 @@ const salesSchema = z.object({
 type SalesFormInput = z.infer<typeof salesSchema>;
 
 export const SalesBilling: React.FC = () => {
-  const { customers, sales, addSales, settings, toast } = useApp();
+  const { customers, sales, addSales, settings, toast, inventory } = useApp();
   const [activeTab, setActiveTab] = useState<'create' | 'history'>('create');
   const [previewFormat, setPreviewFormat] = useState<'A4' | 'thermal'>('A4');
 
@@ -70,6 +70,20 @@ export const SalesBilling: React.FC = () => {
   const totalAmount = Math.round(taxableValue + gstAmount + packingCharge + deliveryCharge);
 
   const onSubmit = (data: any) => {
+    // Stock validation — block if not enough inventory
+    const saleWeight = Number(data.weight || 0);
+    if (saleWeight <= 0) {
+      toast.show('Please enter a valid weight greater than 0.', 'error');
+      return;
+    }
+    if (saleWeight > inventory.liveWeight) {
+      toast.show(
+        `Insufficient stock! Available: ${inventory.liveWeight.toFixed(2)} KG, Requested: ${saleWeight.toFixed(2)} KG. Please add stock via Purchases first.`,
+        'error'
+      );
+      return;
+    }
+
     addSales({
       ...data,
       totalAmount,
