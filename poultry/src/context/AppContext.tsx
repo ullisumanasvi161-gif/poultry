@@ -58,20 +58,42 @@ interface AppContextProps {
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
+function useLocalStorage<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(storedValue));
+    } catch (error) {
+      console.warn(`Error setting localStorage key "${key}":`, error);
+    }
+  }, [key, storedValue]);
+
+  return [storedValue, setStoredValue];
+}
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Global states
-  const [settings, setSettings] = useState<Settings>(initialSettings);
-  const [suppliers, setSuppliers] = useState<Supplier[]>(initialSuppliers);
-  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
-  const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases);
-  const [sales, setSales] = useState<Sales[]>(initialSales);
-  const [payments, setPayments] = useState<Payment[]>(initialPayments);
-  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
-  const [marketRates, setMarketRates] = useState<MarketRate[]>(initialMarketRates);
-  const [rateHistory, setRateHistory] = useState(marketRateHistory);
-  const [salesTrend, setSalesTrend] = useState(salesVsPurchasesTrend);
-  const [inventory, setInventory] = useState<Inventory>(initialInventory);
-  const [ledgerEntries, setLedgerEntries] = useState<LedgerEntry[]>(initialLedgerEntries);
+  const [settings, setSettings] = useLocalStorage<Settings>('sr_settings', initialSettings);
+  const [suppliers, setSuppliers] = useLocalStorage<Supplier[]>('sr_suppliers', initialSuppliers);
+  const [customers, setCustomers] = useLocalStorage<Customer[]>('sr_customers', initialCustomers);
+  const [purchases, setPurchases] = useLocalStorage<Purchase[]>('sr_purchases', initialPurchases);
+  const [sales, setSales] = useLocalStorage<Sales[]>('sr_sales', initialSales);
+  const [payments, setPayments] = useLocalStorage<Payment[]>('sr_payments', initialPayments);
+  const [expenses, setExpenses] = useLocalStorage<Expense[]>('sr_expenses', initialExpenses);
+  const [marketRates, setMarketRates] = useLocalStorage<MarketRate[]>('sr_marketRates', initialMarketRates);
+  const [rateHistory, setRateHistory] = useLocalStorage('sr_rateHistory', marketRateHistory);
+  const [salesTrend, setSalesTrend] = useLocalStorage('sr_salesTrend', salesVsPurchasesTrend);
+  const [inventory, setInventory] = useLocalStorage<Inventory>('sr_inventory', initialInventory);
+  const [ledgerEntries, setLedgerEntries] = useLocalStorage<LedgerEntry[]>('sr_ledgerEntries', initialLedgerEntries);
   
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem('sr_poultry_auth') === 'true';
